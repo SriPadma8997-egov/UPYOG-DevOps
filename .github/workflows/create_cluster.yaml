@@ -81,17 +81,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
           AWS_REGION:  ${{ secrets.AWS_REGION }}
-
-      - name: Running the input script
-        run: go run init.go
-        working-directory: infra-as-code/terraform/scripts 
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
-
       - name: Terraform init - Infra creation
         id: init-Infra
         run: terraform init
