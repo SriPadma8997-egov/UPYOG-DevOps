@@ -106,7 +106,7 @@ jobs:
       - name: Terraform Plan - Infra creation
         id: plan-Infra
         #if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false
+        run: terraform plan -no-color -input=false -var db_password=demo123456
         #if: "${{ github.event.inputs.terraform_operation == 'plan' }}"
         #continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws
@@ -120,7 +120,7 @@ jobs:
       - name: Terraform Apply - Infra creation
         id: apply-Infra
         #if: github.event_name == 'pull_request'
-        run: terraform apply -no-color -input=false -auto-approve
+        run: terraform apply -no-color -input=false -auto-approve -var db_password=demo123456
         #if: "${{ github.event.inputs.terraform_operation == 'apply' }}"
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws
