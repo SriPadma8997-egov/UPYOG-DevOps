@@ -1,4 +1,4 @@
-name: Terraformworkflow
+name: DIGITClusterworkflow
 on:
   push:
     branches:
