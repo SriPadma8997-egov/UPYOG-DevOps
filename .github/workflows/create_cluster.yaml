@@ -101,7 +101,10 @@ jobs:
         run: |
           output=$(terraform output -json)
           kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value)
+          echo "$kubeconfig" # Add this line to debug
           echo "KUBECONFIG=$kubeconfig" >> $GITHUB_ENV
+      - name: Check KUBECONFIG
+        run: echo "$KUBECONFIG"
       - name: Configure kubectl
         run: |
           echo   "$KUBECONFIG" | base64 --decode > kubeconfig
