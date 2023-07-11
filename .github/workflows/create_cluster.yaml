@@ -3,21 +3,15 @@ on:
   push:
     branches:
       - UPYOG-Bootcamp
-  # workflow_dispatch:
-  #   inputs:
-  #     terraform_operation:
-  #       description: "Terraform operation: plan, apply, destroy"
-  #       required: true
-  #       default: "plan"
-  #       type: choice
-  #       options:
-  #         - plan
-  #         - apply
-  #         - destroy    
-
 jobs:
-  create_infra:
+  input_validation:
     runs-on: ubuntu-latest
+    env:
+      TF_IN_AUTOMATION: "true"
+      AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_REGION:  ${{ secrets.AWS_REGION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -35,98 +29,82 @@ jobs:
       - name: Updating different files based on parameters provided in input.yaml
         run: go run init.go
         working-directory: infra-as-code/terraform/scripts
+      - name: Upload infra-as-code folder as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: infra-as-code-artifact
+          path: infra-as-code/
+      - name: Upload config-as-code folder as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: config-as-code-artifact
+          path: config-as-code/
+
+  terraform_infra_creation:
+    needs: input_validation
+    runs-on: ubuntu-latest
+    env:
+      TF_IN_AUTOMATION: "true"
+      AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_REGION:  ${{ secrets.AWS_REGION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download infra-as-code folder from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: infra-as-code-artifact
+          path: .
+      - name: Download config-as-code folder from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: config-as-code-artifact
+          path: .
       - name: Terraform Init - remotestate
         id: init
         run: terraform init
         working-directory: infra-as-code/terraform/sample-aws/remote-state
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
       - name: Terraform Validate - remotestate
         id: validate
         run: terraform validate -no-color
-        working-directory: infra-as-code/terraform/sample-aws/remote-state
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
+        working-directory: infra-as-code/terraform/sample-aws/remote-state  
       - name: Terraform Plan - remotestate
         id: plan
-        #if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false
-        #if: "${{ github.event.inputs.terraform_operation == 'plan' }}"
-        #continue-on-error: true  
+        run: terraform plan -no-color -input=false 
         working-directory: infra-as-code/terraform/sample-aws/remote-state
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
       - name: Terraform Apply - remotestate
         id: apply
-        #if: github.event_name == 'pull_request'
         run: terraform apply -no-color -input=false -auto-approve
-        #if: "${{ github.event.inputs.terraform_operation == 'apply' }}"
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws/remote-state
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
       - name: Terraform init - Infra creation
         id: init-Infra
         run: terraform init
         working-directory: infra-as-code/terraform/sample-aws
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
-
       - name: Terraform Validate - Infra creation
         id: validate-Infra
         run: terraform validate -no-color
         working-directory: infra-as-code/terraform/sample-aws
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
-
       - name: Terraform Plan - Infra creation
         id: plan-Infra
-        #if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false -var db_password=demo123456
-        #if: "${{ github.event.inputs.terraform_operation == 'plan' }}"
-        #continue-on-error: true  
+        run: terraform plan -no-color -input=false -var db_password=demo123456   
         working-directory: infra-as-code/terraform/sample-aws
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
-
       - name: Terraform Apply - Infra creation
         id: apply-Infra
-        #if: github.event_name == 'pull_request'
         run: terraform apply -no-color -input=false -auto-approve -var db_password=demo123456
-        #if: "${{ github.event.inputs.terraform_operation == 'apply' }}"
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws
-        env:
-          TF_IN_AUTOMATION: "true"
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_REGION:  ${{ secrets.AWS_REGION }}
+      - name: Extract kubeconfig
+        id: get_kubeconfig
+        run: |
+          output=$(terraform output -json)
+          kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value | base64 | tr -d '\n')
+          echo "::set-output name=kubeconfig::${kubeconfig}"
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          kubeconfig: ${{ steps.get_kubeconfig.outputs.kubeconfig }}  
+      - name: Verify kubectl configuration
+        run: kubectl config view 
