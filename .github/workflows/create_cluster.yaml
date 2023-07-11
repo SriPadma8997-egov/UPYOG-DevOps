@@ -102,4 +102,6 @@ jobs:
           cat ~/.kube/config > kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
+      - name: Verfiy kubectl get nodes
+        run: kubectl get nodes  
 
