@@ -96,18 +96,14 @@ jobs:
         run: terraform apply -no-color -input=false -auto-approve -var db_password=demo123456
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws
-      - name: Extract kubeconfig
-        id: get_kubeconfig
+      - name: Execute terraform and extract kubeconfig
         run: |
           output=$(terraform output -json)
           kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value)
-          echo "$kubeconfig" # Add this line to debug
-          echo "KUBECONFIG=$kubeconfig" >> $GITHUB_ENV
-      - name: Check KUBECONFIG
-        run: echo "$KUBECONFIG"
-      - name: Configure kubectl
+          echo "$kubeconfig" > kubeconfig_base64
+      - name: Decode kubeconfig
         run: |
-          echo   "$KUBECONFIG" | base64 --decode > kubeconfig
+          cat kubeconfig_base64 | base64 --decode > kubeconfig
           export KUBECONFIG=kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
