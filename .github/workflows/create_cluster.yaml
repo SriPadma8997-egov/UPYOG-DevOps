@@ -96,19 +96,10 @@ jobs:
         run: terraform apply -no-color -input=false -auto-approve -var db_password=demo123456
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws
-      - name: Execute terraform and extract kubeconfig
+      - name: Generate kubeconfig
         run: |
-          output=$(terraform output -json)
-          echo "Terraform output: $output" # Debug line
-          kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value)
-          echo "Extracted kubeconfig: $kubeconfig" # Debug line
-          echo "$kubeconfig" > kubeconfig_base64
-      - name: Decode kubeconfig
-        run: |
-          cat kubeconfig_base64 | base64 --decode > kubeconfig
-          echo "Decoded kubeconfig:" # Debug line
-          cat kubeconfig # Debug line
-          export KUBECONFIG=kubeconfig
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name testactions
+          cat ~/.kube/config > kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
 
