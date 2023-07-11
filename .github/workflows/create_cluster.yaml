@@ -111,3 +111,4 @@ jobs:
           export KUBECONFIG=kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
+
