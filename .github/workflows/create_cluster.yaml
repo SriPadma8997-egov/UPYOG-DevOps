@@ -100,7 +100,7 @@ jobs:
         id: get_kubeconfig
         run: |
           output=$(terraform output -json)
-          kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value
+          kubeconfig=$(echo "${output}" | jq -r .kubectl_config.value)
           echo "::set-output name=kubeconfig::${kubeconfig}"
       - name: Configure kubectl
         uses: azure/setup-kubectl@v1
