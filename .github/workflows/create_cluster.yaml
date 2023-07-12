@@ -116,4 +116,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
           AWS_REGION:  ${{ secrets.AWS_REGION }}
+      - name: Updating the terraform output data in environment.yaml files for deployment
+        run: terraform output -json | go run ../scripts/envYAMLUpdater.go
+        working-directory: infra-as-code/terraform/sample-aws
+      - name: Deployment of services
+        run: go run digit_installer.go 
+        working-directory: deploy-as-code/deployer
+     
 
