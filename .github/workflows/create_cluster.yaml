@@ -125,7 +125,7 @@ jobs:
       - name: Create expect script
         run: |
           echo '#!/usr/bin/expect' > run_with_expect.sh
-          echo 'set timeout 60' >> run_with_expect.sh
+          echo 'set timeout 10' >> run_with_expect.sh
           echo 'spawn go run digit_installer.go' >> run_with_expect.sh
           echo 'expect "? Are you good to proceed?: "' >> run_with_expect.sh
           echo 'send "Yes\r"' >> run_with_expect.sh
@@ -135,6 +135,9 @@ jobs:
           echo 'expect eof' >> run_with_expect.sh
           echo 'expect "Which Product would you like to install, Please Select:"' >> run_with_expect.sh
           echo 'send "DIGIT\r"' >> run_with_expect.sh
+          echo 'expect eof' >> run_with_expect.sh
+          echo 'expect "Which version of the product would like to install, Select below:"' >> run_with_expect.sh
+          echo 'send "digit-v2.7\r"' >> run_with_expect.sh
           echo 'expect eof' >> run_with_expect.sh
         working-directory: deploy-as-code/deployer
       - name: Make script executable
