@@ -122,5 +122,22 @@ jobs:
       - name: Deployment of services
         run: go run digit_installer.go 
         working-directory: deploy-as-code/deployer
+      - name: Install expect
+        run: sudo apt-get install -y expect
+        working-directory: deploy-as-code/deployer
+      - name: Create expect script
+        run: |
+          echo '#!/usr/bin/expect' > run_with_expect.sh
+          echo 'set timeout 60' >> run_with_expect.sh
+          echo 'spawn go run digit_installer.go' >> run_with_expect.sh
+          echo 'expect "? Are you good to proceed?: "' >> run_with_expect.sh
+          echo 'send "Yes\r"' >> run_with_expect.sh
+          echo 'expect eof' >> run_with_expect.sh
+        working-directory: deploy-as-code/deployer
+      - name: Make script executable
+        run: chmod +x run_with_expect.sh
+        working-directory: deploy-as-code/deployer
+      - name: Deployment of services
+        run: ./run_with_expect.sh
+        working-directory: deploy-as-code/deployer  
      
-
