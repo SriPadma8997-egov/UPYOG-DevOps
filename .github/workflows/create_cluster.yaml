@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - UPYOG-Bootcamp
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: 'Type "yes" to confirm destroy action'
+        required: true    
 jobs:
   input_validation:
     runs-on: ubuntu-latest
@@ -146,4 +151,47 @@ jobs:
       - name: Deployment of services
         run: ./run_with_expect.sh
         working-directory: deploy-as-code/deployer  
+  
+  terraform_infra_destruction:
+    needs: input_validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    env:
+      TF_IN_AUTOMATION: "true"
+      AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION:  ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_REGION:  ${{ secrets.AWS_REGION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download infra-as-code folder from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: infra-as-code-artifact
+          path: .
+      - name: Download config-as-code folder from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: config-as-code-artifact
+          path: .
+      - name: Terraform Init - remotestate
+        run: terraform init
+        working-directory: infra-as-code/terraform/sample-aws/remote-state
+      - name: Terraform Validate - remotestate
+        run: terraform validate -no-color
+        working-directory: infra-as-code/terraform/sample-aws/remote-state
+      - name: Terraform Init - Infra destruction
+        run: terraform init
+        working-directory: infra-as-code/terraform/sample-aws
+      - name: Terraform Validate - Infra destruction
+        run: terraform validate -no-color
+        working-directory: infra-as-code/terraform/sample-aws
+      - name: Terraform Plan - Infra destruction
+        run: terraform plan -destroy -no-color -input=false
+        working-directory: infra-as-code/terraform/sample-aws
+      - name: Terraform Destroy - Infra destruction
+        run: terraform destroy -no-color -auto-approve
+        working-directory: infra-as-code/terraform/sample-aws
+      
      
