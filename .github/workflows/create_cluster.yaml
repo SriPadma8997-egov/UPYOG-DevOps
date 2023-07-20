@@ -2,12 +2,7 @@ name: DIGITClusterworkflow
 on:
   push:
     branches:
-      - UPYOG-Bootcamp
-  workflow_dispatch:
-    inputs:
-      confirm_destroy:
-        description: 'Type "yes" to confirm destroy action'
-        required: true    
+      - UPYOG-Bootcamp   
 jobs:
   input_validation:
     runs-on: ubuntu-latest
@@ -155,7 +150,6 @@ jobs:
   terraform_infra_destruction:
     needs: input_validation
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
     env:
       TF_IN_AUTOMATION: "true"
       AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
