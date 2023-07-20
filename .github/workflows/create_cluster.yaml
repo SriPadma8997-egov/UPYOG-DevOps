@@ -148,7 +148,7 @@ jobs:
         working-directory: deploy-as-code/deployer  
   
   terraform_infra_destruction:
-    needs: input_validation
+    needs: terraform_infra_creation
     runs-on: ubuntu-latest
     env:
       TF_IN_AUTOMATION: "true"
@@ -182,10 +182,10 @@ jobs:
         run: terraform validate -no-color
         working-directory: infra-as-code/terraform/sample-aws
       - name: Terraform Plan - Infra destruction
-        run: terraform plan -destroy -no-color -input=false
+        run: terraform plan -destroy -no-color -input=false -var db_password=demo123456
         working-directory: infra-as-code/terraform/sample-aws
       - name: Terraform Destroy - Infra destruction
-        run: terraform destroy -no-color -auto-approve
+        run: terraform destroy -no-color -auto-approve -var db_password=demo123456
         working-directory: infra-as-code/terraform/sample-aws
       
      
