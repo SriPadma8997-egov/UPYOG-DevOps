@@ -30,7 +30,7 @@ jobs:
         run: go run init.go
         working-directory: infra-as-code/terraform/scripts
       - name: Displaying s3 bucket updated variables file
-        run: cat vaiables.tf
+        run: cat variables.tf
         working-directory: infra-as-code/terraform/sample-aws/remote-state
       - name: Displaying variables.tf file
         run: cat variables.tf
