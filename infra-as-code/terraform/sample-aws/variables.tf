@@ -5,7 +5,7 @@
 
 variable "cluster_name" {
   description = "Name of the Kubernetes cluster"
-  default = "githubactions" #REPLACE
+  default = <cluster_name> #REPLACE
 }
 
 variable "vpc_cidr_block" {
@@ -47,29 +47,28 @@ variable "number_of_worker_nodes" {
 
 variable "ssh_key_name" {
   description = "ssh key name, not required if your using spot instance types"
-  default = "githubactions" #REPLACE
+  default = <ssh_key_name> #REPLACE
 }
 
 
 variable "db_name" {
   description = "RDS DB name. Make sure there are no hyphens or other special characters in the DB name. Else, DB creation will fail"
-  default = "githubactions" #REPLACE
+  default = <db_name> #REPLACE
 }
 
 variable "db_username" {
   description = "RDS database user name"
-  default = "githubactions" #REPLACE
+  default = <db_username> #REPLACE
 }
 
 #DO NOT fill in here. This will be asked at runtime
 variable "db_password" {}
 
 variable "public_key" {
-  default = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC45oQnyw/dKJcYHeDj4oCy0Dsvxiyc8lCrX9ISZU9FD63sl/J/UBiWdPe6tBfAEsShGWOnaifKbHDVa+LZcs5rhCNXOK91XtJaL5uHcG8kpsL3hbr+vhZrzpHkG03ZxcnMs56NOb2uoiJ7Z37UxdWc3el9ajZidGT6/eiC6vvJYntxjlm0JYc5sPg0+XTigBihbvHMoDUwU+L9xGTJ094dhFZvZWU8oz+zrO5jDdfUEGm73oiO4i0NzaE2BETubMeRkR5NmJiYtin+EYheVEj7PDsYwB10w3bfIZVyOJ+pYnoDwyfV+4ODWc9Fds8WuCGsJwkV/dQdzPxOP08atPt9"
+  default = <public_ssh_key>
   description = "ssh key"
 }
 
 ## change ssh key_name eg. digit-quickstart_your-name
-
 
 
