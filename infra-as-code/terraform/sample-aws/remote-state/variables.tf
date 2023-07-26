@@ -1,3 +1,3 @@
 variable "bucket_name" {
-  default = "githubactions-digit-terraform"
+  default = <terraform_state_bucket_name>
 }
