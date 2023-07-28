@@ -35,16 +35,20 @@ jobs:
       - name: Displaying variables.tf file
         run: cat variables.tf
         working-directory: infra-as-code/terraform/sample-aws
+      - name: Archive infra-as-code folder
+        run: tar -czf infra-as-code.tar.gz infra-as-code/
+      - name: Archive config-as-code folder
+        run: tar -czf config-as-code.tar.gz config-as-code/
       - name: Upload infra-as-code folder as artifact
         uses: actions/upload-artifact@v2
         with:
           name: infra-as-code-artifact
-          path: infra-as-code/
+          path: infra-as-code.tar.gz
       - name: Upload config-as-code folder as artifact
         uses: actions/upload-artifact@v2
         with:
           name: config-as-code-artifact
-          path: config-as-code/
+          path: config-as-code.tar.gz  
 
   terraform_infra_creation:
     needs: input_validation
@@ -58,16 +62,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Download infra-as-code folder from artifacts
+      - name: Download infra-as-code artifact
         uses: actions/download-artifact@v2
         with:
           name: infra-as-code-artifact
           path: .
-      - name: Download config-as-code folder from artifacts
+      - name: Download config-as-code artifact
         uses: actions/download-artifact@v2
         with:
           name: config-as-code-artifact
           path: .
+      - name: Extract infra-as-code folder
+        run: tar -xzf infra-as-code.tar.gz
+      - name: Extract config-as-code folder
+        run: tar -xzf config-as-code.tar.gz
       - name: Displaying s3 bucket updated variables file
         run: cat variables.tf
         working-directory: infra-as-code/terraform/sample-aws/remote-state    
