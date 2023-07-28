@@ -68,6 +68,9 @@ jobs:
         with:
           name: config-as-code-artifact
           path: .
+      - name: Displaying s3 bucket updated variables file
+        run: cat variables.tf
+        working-directory: infra-as-code/terraform/sample-aws/remote-state    
       - name: Terraform Init - remotestate
         id: init
         run: terraform init
