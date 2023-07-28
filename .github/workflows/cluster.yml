@@ -29,8 +29,6 @@ jobs:
       - name: Updating different files based on parameters provided in input.yaml
         run: go run init.go
         working-directory: infra-as-code/terraform/scripts
-        env:
-         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Displaying s3 bucket updated variables file
         run: cat variables.tf
         working-directory: infra-as-code/terraform/sample-aws/remote-state
@@ -42,15 +40,11 @@ jobs:
         with:
           name: infra-as-code-artifact
           path: infra-as-code/
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Upload config-as-code folder as artifact
         uses: actions/upload-artifact@v2
         with:
           name: config-as-code-artifact
           path: config-as-code/
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
   terraform_infra_creation:
     needs: input_validation
