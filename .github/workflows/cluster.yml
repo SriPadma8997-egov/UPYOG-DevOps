@@ -17,12 +17,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Build project
         run: echo "Build started"
-      - name: View Secrets
-        run: |
-          echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
-          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-          echo "AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}"
-          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
       - name: Displaying the input parameters provided
         run: cat input.yaml
         working-directory: infra-as-code/terraform/sample-aws
@@ -130,6 +124,12 @@ jobs:
           echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
           echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           echo "AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}"
+          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+      - name: Enable Step-level Debugging
+        run: |
+          echo "ACTIONS_RUNNER_DEBUG: 'true'" >> $GITHUB_ENV
+      - name: Display AWS Region
+        run: |
           echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
       - name: Generate kubeconfig
         run: |
