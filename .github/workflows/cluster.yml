@@ -121,11 +121,11 @@ jobs:
           aws-iam-authenticator version 
       - name: Capture EKS Cluster Name
         id: capture-eks-name
-        run: echo "::set-env name=EKS_CLUSTER_NAME::$(terraform output -json eks_cluster_name | jq -r)"
+        run: echo "EKS_CLUSTER_NAME=$(terraform output -json eks_cluster_name | jq -r)" >> $GITHUB_ENV
         working-directory: infra-as-code/terraform/sample-aws
       - name: Generate kubeconfig
         run: |
-          aws eks update-kubeconfig --region ap-south-1 --name ${{ env.EKS_CLUSTER_NAME }}
+          aws eks update-kubeconfig --region ap-south-1 --name $EKS_CLUSTER_NAME 
           cat ~/.kube/config > kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
