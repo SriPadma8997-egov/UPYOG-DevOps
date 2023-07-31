@@ -118,10 +118,14 @@ jobs:
           curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/aws-iam-authenticator
           chmod +x ./aws-iam-authenticator
           sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-          aws-iam-authenticator version  
+          aws-iam-authenticator version 
+      - name: Capture EKS Cluster Name
+        id: capture-eks-name
+        run: echo "::set-env name=EKS_CLUSTER_NAME::$(terraform output -json eks_cluster_name | jq -r)"
+        working-directory: infra-as-code/terraform/sample-aws
       - name: Generate kubeconfig
         run: |
-          aws eks update-kubeconfig --region ap-south-1 --name githubpadma
+          aws eks update-kubeconfig --region ap-south-1 --name ${{ env.EKS_CLUSTER_NAME }}
           cat ~/.kube/config > kubeconfig
       - name: Verify kubectl configuration
         run: kubectl config view 
