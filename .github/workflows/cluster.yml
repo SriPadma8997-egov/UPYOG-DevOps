@@ -97,7 +97,7 @@ jobs:
         continue-on-error: true  
         working-directory: infra-as-code/terraform/sample-aws/remote-state
       - name: Terraform state removing config - Infra creation
-        id: check config
+        id: check-config
         run: terraform state rm module.eks.kubernetes_config_map.aws_auth
         working-directory: infra-as-code/terraform/sample-aws
       - name: Terraform init - Infra creation
